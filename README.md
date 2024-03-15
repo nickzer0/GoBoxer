@@ -10,3 +10,4 @@ GoBoxer is a tool I started writing to learn about Websockets, and ended up gett
 
 It's far from complete and there are bugs, but it's currently in a workable state.
 
+![Alt text](/screenshots/dashboard.png?raw=true "Dashboard")
