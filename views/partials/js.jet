@@ -1,0 +1,195 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const host = window.location.host;
+        const userID = "{{.User.ID}}"; // Assuming userID is available in your template
+        const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsURL = `${wsProtocol}//${host}/ws`; // Adjust the path as necessary
+    
+        // Initialize WebSocket connection
+        const ws = new WebSocket(wsURL);
+
+        let attention = Prompt();
+            {{if .Flash != ""}}
+            successAlert('{{.Flash}}')
+            {{end}}
+            {{if .Warning != ""}}
+            warningAlert('{{.Warning}}')
+            {{end}}
+            {{if .Error != ""}}
+            errorAlert('{{.Error}}')
+            {{end}}
+    
+        ws.onopen = function() {
+            // Subscribe to public and private channels after connection is established
+            ws.send(JSON.stringify({action: "subscribe", channel: "public-channel"}));
+            ws.send(JSON.stringify({action: "subscribe", channel: userID}));
+        };
+    
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            // Determine the type of the message and handle accordingly
+            switch(data.type) {
+                case "message":
+
+                    // Handle regular messages
+                    attention.toast({
+                        msg: data.message,
+                        icon: data.status,
+                        timer: 5000,
+                        showCloseButton: true,
+                    });
+                    break;
+                case "deployed":
+                    // Handle 'deployed' messages
+                    attention.toast({
+                        msg: "Server deployed" + data.serverName,
+                        icon: 'info',
+                        timer: 6000,
+                        showCloseButton: true,
+                    });
+                    break;
+                case "domain-lookup":
+                    // Handle 'domain-lookup' messages
+                    handleDomainLookup(data.data);
+                    break;
+                case "domain-purchase":
+                    // Handle 'domain-purchase' messages
+                    handleDomainPurchase(data.data);
+                    break;
+                case "server-changed":
+                    // Handle 'server-changed' messages
+                    updateServerTable(data.data);
+                    break;
+                case "redirector-changed":
+                    // Handle 'redirector-changed' messages
+                    updateRedirectorTable(data.data);
+                    break;
+            }
+        };
+    });
+    
+    function handleDomainLookup(data) {
+        let divExists = !!document.getElementById("lookup-status");
+        let div = document.getElementById("lookup-status");
+
+        console.log(data);
+    if (data.status == "Available") {
+        var status = `<span class="badge bg-success">Available</span>`
+    } else {
+        var status = `<span class="badge bg-danger">Unavailable</span>`
+    }
+    if (divExists && data.status == "Available") {
+        div.innerHTML = `
+        <table class="table table-sm table-bordered my-0 mt-2 text-center">
+            <tr>
+              <td>Domain:</td>
+              <td>${data.domain}</td>
+            </tr>
+            <tr>
+              <td>Provider:</td>
+              <td>${data.provider}</td>
+            </tr>
+            <td>Status:</td>
+              <td>${status}</td>
+            </tr>
+            <td>Price:</td>
+              <td>$${data.price}</td>
+            </tr>
+        </table>
+        <div class="text-center">
+            <a onclick="purchaseDomain()" class="btn btn-success mt-2">Purchase</a>
+        </div>
+        `;
+        } else if (divExists && data.status != "Available") {
+            div.innerHTML = `
+        <table class="table table-sm table-bordered my-0 mt-2 text-center">
+            <tr>
+              <td>Domain:</td>
+              <td>${data.domain}</td>
+            </tr>
+            <tr>
+              <td>Provider:</td>
+              <td>${data.provider}</td>
+            </tr>
+            <td>Status:</td>
+              <td>${status}</td>
+            </tr>
+        </table>
+        `;
+        }
+    }
+    
+    function handleDomainPurchase(data) {
+        let divExists = !!document.getElementById("lookup-status");
+        let div = document.getElementById("lookup-status");
+        if (data.status == "checking") {
+            if (divExists) {
+                div.innerHTML = '<img src="/static/assets/img/loading.gif" height="150" width="150" class="rounded mx-auto d-block"/>';
+            }
+        }
+        else if (data.status == "complete") {
+            if (divExists) {
+                div.innerHTML = '<img src="/static/assets/img/tick.gif" height="180" width="240" class="rounded mx-auto d-block"/>';
+            }
+        }  
+    }
+    
+    function updateServerTable(data) {
+        let serverTableExists = !!document.getElementById("server-table");
+        if (serverTableExists) {
+            let serverTable = document.getElementById("server-table");
+            let tableContent = serverTable.innerHTML;
+            if (tableContent.includes("No servers found!")) {
+                let rowCount = serverTable.rows.length;
+                for (let i = rowCount -1; i > 0; i--) {
+                    serverTable.deleteRow(i);
+                }
+            }
+
+            let row = document.getElementById("server-" + data.server_id)
+            if (data.ip_address != "") {
+                row.cells[5].innerHTML = `<span id="ip-address-${data.server_id}">${data.ip_address}</span><button class="btn fa-regular fa-clipboard" onclick="copyFunction()"></button>`;
+            }
+            if (data.status === "new") {
+                row.cells[6].innerHTML = `<span class="badge bg-success">New</span>`
+            } else {
+                row.cells[6].innerHTML = `<span class="badge bg-success">${data.status}</span>`
+            }
+        }
+    }
+    
+    function updateRedirectorTable(data) {
+        let redirectorTableExists = !!document.getElementById("redirector-table");
+        if (redirectorTableExists) {
+            let redirectorTable = document.getElementById("redirector-table");
+            let tableContent = redirectorTable.innerHTML;
+            if (tableContent.includes("No redirectors found!")) {
+                let rowCount = redirectorTable.rows.length;
+                for (let i = rowCount -1; i > 0; i--) {
+                    redirectorTable.deleteRow(i);
+                }
+            }
+
+            let row = document.getElementById("redirector-" + data.redirector_id)
+            if (data.status == "Creating") {
+                row.cells[5].innerHTML = `<span class="badge bg-primary" data-toggle="tooltip" title="This may take up to 5 minutes.">Creating</span>`;
+            } else if (data.status == "Ready") {
+                row.cells[5].innerHTML = `<span id="status" class="badge bg-success">Ready</span>`;
+                row.cells[6].innerHTML = `<span type="button" class="badge rounded-pill bg-danger" onclick="deleteRedirector(${data.redirector_id})" data-toggle="tooltip" title="Delete">X</span>`;
+            }
+
+        }
+    }
+
+    let attention = Prompt();
+        {{if .Flash != ""}}
+        successAlert('{{.Flash}}')
+        {{end}}
+        {{if .Warning != ""}}
+        warningAlert('{{.Warning}}')
+        {{end}}
+        {{if .Error != ""}}
+        errorAlert('{{.Error}}')
+        {{end}}
+    </script>
+    

@@ -1,0 +1,97 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Scripts
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/scripts">Scripts</a></li>
+      <li class="breadcrumb-item active">{{script.Name}}</li>
+    </ol>
+    <h4 class="mt-4">{{script.Name}}</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="container-fluid p-0">
+  <div class="row">
+    <div class="col-md-5">
+      <table class="table my-0 text-center">
+        <tr>
+          <td>Script ID</td>
+          <td></td>
+          <td>{{script.ID}}</td>
+        </tr>
+        <tr>
+          <td>Script Name</td>
+          <td></td>
+          <td>{{script.Name}}</td>
+        </tr>
+        <tr>
+          <td>Creator</td>
+          <td></td>
+          <td>{{script.CreatedBy}}</td>
+        </tr>
+        <tr>
+          <td>Date Added</td>
+          <td></td>
+          <td>{{humanDate(script.CreatedAt)}}</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <div class="col-md-7">
+      <form action="/app/scripts/update/{{script.ID}}" method="POST">
+        <div class="overflow-auto mt-1 form-group" style="max-height: 150px">
+          <label>Description</label><br>
+          <textarea id="description" name="description" rows="5" class="form-control">{{script.Description}}</textarea>
+        </div>
+
+    </div>
+
+    <div class="col-md-12">
+      <div class="overflow-auto mt-1 form-group mt-4" style="max-height: 350px">
+        <label>Script Content</label><br>
+        <textarea id="script_content" name="script_content" rows="12" class="form-control">{{scriptContent}}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-3">Update</button>
+      <a href="#!" class="btn btn-danger mt-3 float-right mb-6" onclick="deleteFile()">Delete</a>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+{{end}}
+
+{{block js()}}
+<script>
+  function deleteFile() {
+    var id = {{script.ID}}
+    var name = "{{script.Name}}";
+    console.log(id)
+    attention.confirm({
+      html: "Are you sure you want to remove script " + name + "?",
+      icon: "warning",
+      confirmButton: true,
+
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/scripts/remove/" + id;
+        }
+      }
+    })
+  }
+</script>
+{{end}}

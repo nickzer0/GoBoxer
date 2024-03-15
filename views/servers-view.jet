@@ -1,0 +1,125 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Projects
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/servers">Servers</a></li>
+      <li class="breadcrumb-item active">{{server.ID}} - {{server.Name}}</li>
+    </ol>
+    <h4 class="mt-4">{{server.Name}}</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="container-fluid p-0">
+  <div class="row">
+    <div class="col-md-5">
+          <table class="table my-0 text-center">
+            <tr>
+              <td>Server ID</td>
+              <td></td>
+              <td>{{server.ID}}</td>
+            </tr>
+            <tr>
+              <td>Project</td>
+              <td></td>
+              <td><a href="/app/projects/{{server.Project}}">{{server.Project}}</a></td>
+            </tr>
+            <tr>
+              <td>Hostname</td>
+              <td></td>
+              <td>{{server.Name}}</td>
+            </tr>
+            <tr>
+              <td>Provider</td>
+              <td></td>
+              <td>{{server.Provider}}</td>
+            </tr>
+            <tr>
+              <td>OS</td>
+              <td></td>
+              <td>{{server.OS}}</td>
+            </tr>
+            <tr>
+              <td>IP</td>
+              <td></td>
+              <td>{{server.IP}}</td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td></td>
+              <td><span class="badge bg-success">{{server.Status}}</span></a>
+            </tr>
+          </table>
+
+    </div>
+
+    <div class="col-md-5 ml-5">
+          <form action="/app/servers/update/{{server.ID}}" method="POST">
+            <div class="overflow-auto mt-1" style="max-height: 150px">
+              <label>Add Roles</label><br>
+              {{range _, script := scripts}}
+              <input type="checkbox" class="form-check-inline mt-1" name="scripts" id="scripts" value="{{script}}"
+                {{range _, role :=server.Roles}}{{if script==role}}checked disabled{{end}}{{end}}>{{script}}<br>
+              {{end}}
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm mt-2">Update</button>
+          </form>
+
+    </div>
+    <div class="text-right">
+      <a onclick="provisionServer({{server.ID}})" class="btn btn-info">Reprovision</a>
+      <a onclick="deleteServer({{server.ID}})" class="btn btn-danger">Delete</a>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{block js()}}
+<script>
+  function provisionServer(id) {
+    attention.confirm({
+      html: "Are you sure you want to re-run provisioning scripts on this server?",
+      icon: 'warning',
+      confirmButton: true,
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/servers/provision/" + id;
+        }
+      }
+    })
+  }
+</script>
+
+<script>
+  function deleteServer(id) {
+    attention.confirm({
+      html: "Are you sure you want to delete this server?",
+      icon: 'warning',
+      confirmButton: true,
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/servers/remove/" + id;
+        }
+      }
+    })
+  }
+</script>
+
+<script>
+  function copyFunction() {
+    var copyText = document.getElementById("ip_address");
+    navigator.clipboard.writeText(copyText.innerHTML);
+  }
+  </script>
+{{end}}

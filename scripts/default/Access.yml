@@ -1,0 +1,17 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Set authorized key for user
+      become: true
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ ssh_key }}"
+    
+    - name: Change password for root user
+      become: true
+      user:
+        name: root
+        state: present
+        password: "{{ root_password }}"

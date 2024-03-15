@@ -1,0 +1,71 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Redirectors
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/redirectors">Redirectors</a></li>
+      <li class="breadcrumb-item active">Add</li>
+    </ol>
+    <h4 class="mt-4">Add Redirector</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-2 grid-margin stretch-card">
+
+    <form method="post" action="/app/redirectors/add" novalidate class="needs-validation" id="host-form">
+    <div class="form-group">
+      <label>Domain Name</label>
+      <div class="overflow-auto mt-1" style="max-height: 100px">
+        <input type="text" class="form-control" name="domain" id="domain" placeholder="Enter origin URL">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Provider</label>
+      <select class="form-select" id="provider" name="provider" value="">
+        <option value="" disabled selected></option>
+        {{range providers}}
+        <option>{{.}}</option>
+        {{end}}
+
+      </select>
+    </div>
+
+
+    <div class="form-group mt-3">
+      <label>Assign To Project</label>
+      <div class="overflow-auto mt-1" style="max-height: 100px">
+        {{range _, project := projects}}
+          <input type="radio" class="form-check-input" name="project" id="project" value="{{project.ProjectNumber}}" required>
+          &nbsp;&nbsp;{{project.ProjectNumber}} - {{project.ProjectName}}<br>              
+          {{end}}
+          <div class="invalid-feedback">
+            You must assign a project.
+          </div>
+      </div>
+    </div>
+
+    <div class="form-group text-center">
+      <button type="submit" class="btn btn-primary mt-4">Submit</button>
+    </div>
+    </form>
+
+  </div>
+</div>
+
+{{end}}
+
+{{block js()}}
+{{end}}

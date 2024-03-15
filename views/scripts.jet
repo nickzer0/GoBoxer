@@ -1,0 +1,83 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Scripts
+{{end}}
+
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item active">Scripts</li>
+    </ol>
+    <a href="/app/scripts/add" class="btn btn-primary float-right">Add</a>
+    <h4 class="mt-4">Scripts</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    {{if len(scripts) > 0}}
+    <table class="table table-condensed table-striped">
+      <thead>
+      <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Creator</th>
+          <th>Date Added</th>
+          <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+        {{range x := scripts}}
+          <tr>
+              <td><a href="/app/scripts/{{.ID}}"><span class="badge bg-info">{{scripts[x].ID}}</span></a></td>
+              <td>{{.Name}}</td>
+              <td>{{.CreatedBy}}</td>
+              <td>{{humanDate(.CreatedAt)}}</td>
+              <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:250px;">{{.Description}}</td>
+          </tr>
+          
+      {{end}}
+      </tbody>
+  </table>
+  {{else}}
+  <p>No scripts found!</p>
+  {{end}}
+  </div>
+</div>
+{{end}}
+
+{{block js()}}
+<script>
+  async function uploadFile() {
+    let formData = new FormData();
+    formData.append("file", file.files[0]);
+    console.log(file.files[0])
+    await fetch('/app/scripts/upload', {
+      method: "POST",
+      body: formData
+    });
+  }
+</script>
+<script>
+  function deleteFile() {
+    let script = document.getElementById("script").value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/app/scripts/remove', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function () {
+      console.log("done")
+    };
+    xhr.send('script=' + script);
+    location.reload();
+  }
+</script>
+{{end}}

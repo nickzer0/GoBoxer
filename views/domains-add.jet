@@ -1,0 +1,102 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Domains
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/domains">Domains</a></li>
+      <li class="breadcrumb-item active">Add</li>
+    </ol>
+    <h4 class="mt-4">Add Domain</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-2 grid-margin stretch-card">
+
+    <div class="form-group">
+      <label>Domain Name</label>
+      <div class="overflow-auto mt-1" style="max-height: 100px">
+        <input type="text" class="form-control" name="domain" id="domain" placeholder="Enter a domain name to lookup">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Provider</label>
+      <select class="form-select" id="provider" name="provider" value="">
+        <option value="" disabled selected></option>
+        {{range _, name := providers}}
+        {{if name == "namecheap"}}<option value="{{name}}">Namecheap</option>{{end}}
+        {{if name == "godaddy"}}<option value="{{name}}">Godaddy</option>{{end}}
+        {{end}}
+      </select>
+    </div>
+
+    <div class="form-group text-center">
+      <a onclick="getDomainInfo()" value="Lookup" class="btn btn-success mt-3 mb-2">Lookup</a>
+    </div>
+
+  </div>
+  <div class="col-md-3 grid-margin stretch-card">
+    <div id="lookup-status" class="ml-4">
+
+    </div>
+  </div>
+
+</div>
+
+{{end}}
+
+{{block js()}}
+<script>
+  function getDomainInfo() {
+    let domain = document.getElementById("domain").value;
+    let provider = document.getElementById("provider").value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/app/domains/lookup', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send('domain=' + domain + '&provider=' + provider);
+  }
+</script>
+
+<script>
+  //   function purchaseDomain() {
+  //     let domain = document.getElementById("domain").value;
+  //     let provider = document.getElementById("provider").value;
+  //     var xhr = new XMLHttpRequest();
+  //     xhr.open('POST', '/app/domains/purchase', true);
+  //     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  //     if (xhr.readyState == 4) {
+  //       console.log(xhr.responseText)
+  //     }
+  //     xhr.send('domain=' + domain + '&provider=' + provider);  
+  // }
+
+  function purchaseDomain() {
+    console.log("purchase domain")
+    let formData = new FormData();
+    let domain = document.getElementById("domain").value;
+    let provider = document.getElementById("provider").value;
+    formData.append("domain", domain);
+    formData.append("provider", provider);
+
+    let response = fetch("/app/domains/purchase", {
+      method: "POST",
+      body: formData,
+    })
+      .then(response => response.text())
+      .then(data => { console.log(data) })
+  }
+
+</script>
+{{end}}

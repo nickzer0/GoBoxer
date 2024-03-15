@@ -1,0 +1,72 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Scripts
+{{end}}
+
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/scripts">Scripts</a></li>
+      <li class="breadcrumb-item active">Add</li>
+    </ol>
+    <h4 class="mt-4">Scripts</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+
+    <div class="col-md-6 grid-margin stretch-card">
+      <div class="mb-3 mt-1">
+        <label>Upload New Ansible Script</label>
+        <input type="file" class="form-control" name="file" id="file" />
+        <div class="overflow-auto mt-1 form-group mt-4" style="max-height: 350px">
+          <label>Description</label>
+          <textarea id="description" name="description" rows="4" class="form-control"></textarea>
+        </div>
+      </div>
+      <input onclick="uploadFile(event)" value="Upload" class="btn btn-success mt-3 mb-2" />
+    </div>
+  </div>
+</div>
+
+
+
+
+
+{{end}}
+
+{{block js()}}
+<script>
+  async function uploadFile() {
+    let formData = new FormData();
+    formData.append("file", file.files[0]);
+    formData.append("description", document.getElementById("description").value);
+    await fetch('/app/scripts/upload', {
+      method: "POST",
+      body: formData
+    });
+  }
+</script>
+<script>
+  function deleteFile() {
+    let script = document.getElementById("script").value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/app/scripts/remove', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function () {
+    };
+    xhr.send('script=' + script);
+    location.reload();
+  }
+</script>
+{{end}}

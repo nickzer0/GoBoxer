@@ -1,0 +1,202 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+<link href="https://unpkg.com/tabulator-tables@5.4.1/dist/css/tabulator.min.css" rel="stylesheet">
+{{end}}
+
+
+{{block cardTitle()}}
+Domains
+{{end}}
+
+{{block cardContent()}}
+
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/domains">Domains</a></li>
+      <li class="breadcrumb-item"><a href="/app/domains/{{domain.ID}}">{{domain.Name}}</a></li>
+      <li class="breadcrumb-item active">Edit</li>
+    </ol>
+    <h4 class="mt-4">DNS Records</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <h5 class="card-title mb-0">DNS Records <a class="fa-solid fa-arrows-rotate" onclick=refreshDNS() data-toggle="tooltip" title="Refresh currently set DNS records on AWS"></a></h5>
+    <form method="POST" action="/app/domains/{{domain.ID}}/edit">
+      <table class="mt-2" id="dns-table">
+        <thead>
+          <th>Data <i class="fa-solid fa-circle-info" data-toggle="tooltip" title="e.g. The IP address of the server you are configuring a domain for."></i></th>
+          <th>Name <i class="fa-solid fa-circle-info" data-toggle="tooltip" title="This is usually the host name of the server. When configuring A records, use '@' for root level."></i></th>
+          <th>Type</th>
+          <th>TTL</th>
+        </thead>
+        <tbody>
+        {{ index := 1 }}
+        {{ if len(dns) > 0 }}
+
+          {{ range _, record := dns }}
+              <tr>
+                <td><input class="form-control" type="text" name="row{{index}}-data" value="{{record.Data}}"></td>
+                <td><input class="form-control" type="text" name="row{{index}}-name" value="{{record.Name}}"></td>
+                <td><input class="form-control" type="text" name="row{{index}}-type" value="{{record.Type}}"></td>
+                <td><input class="form-control" type="text" name="row{{index}}-ttl" value="{{record.Ttl}}"></td>
+                  {{ if index == 1 }}
+                    <td><button class="btn btn-sm btn-primary" type="button" onclick="addRow()">+</button></td>
+                  {{ else }}
+                    <td><button class="btn btn-sm btn-danger" type="button" onclick="removeRow()">-</button></td>
+                  {{ end }}
+              </tr>
+                {{ index + 1 }}
+
+          {{ end }}
+        {{ else }}
+          <td><input class="form-control" type="text" name="row{{index}}-data" value=""></td>
+          <td><input class="form-control" type="text" name="row{{index}}-name" value=""></td>
+          <td><input class="form-control" type="text" name="row{{index}}-type" value=""></td>
+          <td><input class="form-control" type="text" name="row{{index}}-ttl" value=""></td>
+          <td><button class="btn btn-sm btn-primary" type="button" onclick="addRow()">+</button></td>
+        {{ end }}
+        </tbody>
+      </table>
+      <input class="btn btn-primary mt-3" type="submit" value="Submit">
+    </form>
+    
+
+
+  </div>
+</div>
+
+
+
+{{end}}
+
+{{block js()}}
+<script>
+  // Get a reference to the table
+  var table = document.querySelector('table#dns-table');
+  // Select all the rows in the table
+  var rows = table.querySelectorAll('tr');
+  // Get the number of rows
+  var rowCount = rows.length;
+
+  var nextID = rowCount;
+  
+  function addRow() {
+  // Get a reference to the table
+  var table = document.querySelector('table#dns-table');
+
+  // Create a new row
+  var newRow = document.createElement('tr');
+
+  // Set the ID attribute of the new row
+  newRow.id = 'row-' + nextID;
+
+  // Create 3 new cells, and append them to the new row
+  var cell1 = document.createElement('td');
+  var cell2 = document.createElement('td');
+  var cell3 = document.createElement('td');
+  var cell4 = document.createElement('td');
+  var cell5 = document.createElement('td');
+  newRow.appendChild(cell1);
+  newRow.appendChild(cell2);
+  newRow.appendChild(cell3);
+  newRow.appendChild(cell4);
+  newRow.appendChild(cell5);
+
+  // Create 3 new input boxes and append them to the new cells
+  var input1 = document.createElement('input');
+  input1.type = 'text';
+  input1.name = 'row' + nextID + '-data';
+  input1.className = 'form-control';
+  cell1.appendChild(input1);
+
+  var input2 = document.createElement('input');
+  input2.type = 'text';
+  input2.name = 'row' + nextID + '-name';
+  input2.className = 'form-control';
+  cell2.appendChild(input2);
+
+  var select = document.createElement('select');
+  select.className = 'form-select';
+  select.name = 'row' + nextID + '-type';
+  cell3.appendChild(select);
+
+  var option = document.createElement('option');
+  option.value = '';
+  option.disabled = true;
+  option.selected = true;
+  option.innerHTML = '';
+  select.appendChild(option);
+
+  var option = document.createElement('option');
+  option.value = 'TXT';
+  option.innerHTML = 'TXT';
+  select.appendChild(option);
+
+  var option = document.createElement('option');
+  option.value = 'MX';
+  option.innerHTML = 'MX';
+  select.appendChild(option);
+
+  var option = document.createElement('option');
+  option.value = 'A';
+  option.innerHTML = 'A';
+  select.appendChild(option);
+
+  var option = document.createElement('option');
+  option.value = 'PTR';
+  option.innerHTML = 'PTR';
+  select.appendChild(option);
+
+  var option = document.createElement('option');
+  option.value = 'CNAME';
+  option.innerHTML = 'CNAME';
+  select.appendChild(option);
+
+  var input4 = document.createElement('input');
+  input4.type = 'text';
+  input4.name = 'row' + nextID + '-ttl';
+  input4.className = 'form-control';
+  cell4.appendChild(input4);
+
+  // Create a new "add" button and append it to the new cell
+  var button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'btn btn-sm btn-danger';
+  button.innerHTML = '-';
+  button.onclick = removeRow;
+  cell5.appendChild(button);
+  
+  // Append the new row to the table
+  table.appendChild(newRow);
+
+  // Increment the next ID to use
+  nextID++;
+  }
+  
+  function removeRow() {
+    // Get a reference to the table
+    var table = document.querySelector('table#dns-table');
+  
+    // Get a reference to the row that contains the button that was clicked
+    var row = this.parentNode.parentNode;
+  
+    // Remove the row from the table
+    table.removeChild(row);
+  }
+
+  function refreshDNS() {
+    let id = {{domain.ID}};
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/app/domains/' + id + '/refresh-dns', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send('id=' + id);
+    location.reload();
+  }
+  </script>
+{{end}}

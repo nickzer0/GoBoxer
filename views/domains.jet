@@ -1,0 +1,69 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+<style>
+body {
+  color: #222;
+  background: #fff;
+}
+
+</style>
+{{end}}
+
+
+{{block cardTitle()}}
+Domains
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item active">Domains</li>
+    </ol>
+    <a href="/app/domains/add" class="btn btn-primary float-right">Add</a>
+    <h4 class="mt-4">Domains</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <table class="table table-condensed table-striped">
+      <thead>
+      <tr>
+          <th>ID</th>
+          <th>Provider</th>
+          <th>Name</th>
+          <th>Created By</th>
+          <th>Date</th>
+      </tr>
+      </thead>
+      <tbody>
+        {{if len(domains) != 0}}
+        {{range domains}}
+          <tr>
+              <td><a href="/app/domains/{{.ID}}">{{.ID}}</a></td>
+              <td>
+                {{if .Provider == "namecheap"}}<img src="/static/assets/img/namecheap.png" width="20" height="20" data-toggle="tooltip" title="Namecheap"></img>{{end}}
+                {{if .Provider == "godaddy"}}<img src="/static/assets/img/godaddy.png" width="20" height="20" data-toggle="tooltip" title="GoDaddy"></img>{{end}}
+              </td>
+              <td>{{.Name}}</td>
+              <td>{{.CreatedBy}}</td>
+              <td>{{humanDate(.CreatedAt)}}</td>
+              {{end}}
+            {{else}}
+            <tr>
+              <td colspan="5">No domains found!</td>
+              {{end}}
+            </tr>
+      </tbody>
+  </table>
+  </div>
+</div>
+
+{{end}}
+
+{{block js()}}
+{{end}}

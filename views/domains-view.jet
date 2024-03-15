@@ -1,0 +1,90 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Domains
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/domains">Domains</a></li>
+      <li class="breadcrumb-item active">{{domain.Name}}</li>
+    </ol>
+    <button href="/app/domains/{{domain.ID}}/edit" class="btn btn-primary float-right" disabled>Edit DNS</button>
+    <h4 class="mt-4">{{domain.Name}}</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="container-fluid p-0">
+  <div class="row">
+    <div class="col-md-5">
+          <table class="table table-condensed my-0 text-center">
+            <tr>
+              <td >Domain ID</td>
+              <td></td>
+              <td>{{domain.ID}}</td>
+            </tr>
+            <tr>
+              <td>URL</td>
+              <td></td>
+              <td>{{domain.Name}}</td>
+            </tr>
+            <tr>
+              <td>Provider</td>
+              <td></td>
+              <td>{{domain.Provider}}</td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td></td>
+              <td><span class="badge bg-success">{{domain.Status}}</span></a>
+            </tr>
+          </table>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="card-header">
+      <h5 class="card-title mb-0">DNS Records <i class="fa-solid fa-circle-info" data-toggle="tooltip" title="These records are pulled from the Google DNS server, so modified records may not have propagated yet"></i></h5>
+    </div>
+    <div class="col-12 col-md-12 col-xxl-12 d-flex order-2 order-xxl-3 pl-5 pr-5">
+      <table class="table table-bordered my-0 text-center">
+        <tr>
+          <td style="width: 15%">A Records:</td>
+          <td>{{range dns}}{{if .Type == "A"}}{{.Data}}<br>{{end}}{{end}}</td>
+        </tr>
+        <tr>
+          <td style="width: 15%">CNAME Records:</td>
+          <td>{{range dns}}{{if .Type == "CNAME"}}{{.Data}}<br>{{end}}{{end}}</td>
+        </tr>
+        <tr>
+          <td style="width: 15%">MX Records:</td>
+          <td>{{range dns}}{{if .Type == "MX"}}{{.Data}}<br>{{end}}{{end}}</td>
+         </tr>
+         <tr>
+          <td style="width: 15%">NS Records:</td>
+          <td>{{range dns}}{{if .Type == "NS"}}{{.Data}}<br>{{end}}{{end}}</td>
+         </tr>
+         <tr>
+         <td style="width: 15%">PTR Records:</td>
+          <td>{{range dns}}{{if .Type == "PTR"}}{{.Data}}<br>{{end}}{{end}}</td>
+        </tr>
+        <tr>
+          <td style="width: 15%">TXT Records:</td>
+          <td>{{range dns}}{{if .Type == "TXT"}}{{.Data}}<br>{{end}}{{end}}</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+{{end}}
+
+{{block js()}}
+{{end}}

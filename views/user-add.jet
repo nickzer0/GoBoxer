@@ -1,0 +1,81 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Users
+{{end}}
+
+
+{{block cardContent()}}
+<div class="row">
+    <div class="col">
+        <ol class="breadcrumb mt-1">
+            <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+            <li class="breadcrumb-item"><a href="/app/admin/users">Users</a></li>
+            <li class="breadcrumb-item active">Add</li>
+        </ol>
+        <h4 class="mt-4">Add User</h4>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <form method="post" action="/app/admin/users/add" novalidate class="needs-validation" id="host-form">
+            <input type="hidden" name="action" value="1" id="action">
+            <input type="hidden" name="csrf_token" value="">
+
+            <div class="tab-content" id="projects-tab-content" style="min-height: 55vh">
+
+                <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="add-tab" id="add">
+                    <div class="row">
+
+                        <div class="col-md-11 col-xs-12">
+
+                            <div class="col-md-6 grid-margin stretch-card float-left">
+
+                                <div class="form-group mt-1">
+                                    <label for="first_name">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username">
+                                </div>
+
+                                <div class="form-group mt-1">
+                                    <label for="first_name">First Name</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name">
+                                </div>
+
+                                <div class="form-group mt-1">
+                                    <label for="last_name">Last Name</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name">
+                                </div>
+
+                                <div class="form-group mt-1">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="project_name">Access Level</label>
+                                    <select class="form-control" id="access level" name="access_level">
+                                      <option value="1" id="access_level">User</option>
+                                      <option value="10" id="access_level">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 grid-margin stretch-card">
+                        <button type="submit" class="btn btn-primary mt-4">Update</button>
+                    </div>
+        </form>
+    </div>
+</div>
+
+{{end}}
+
+{{block js()}}
+
+{{end}}

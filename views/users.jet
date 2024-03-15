@@ -1,0 +1,61 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Users
+{{end}}
+
+
+{{block cardContent()}}
+<div class="row">
+    <div class="col">
+        <ol class="breadcrumb mt-1">
+            <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+            <li class="breadcrumb-item active">Users</li>
+        </ol>
+        <a href="/app/admin/users/add" class="btn btn-primary float-right">Add</a>
+        <h4 class="mt-4">Users</h4>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <table class="table table-condensed table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Access Level</th>
+            </tr>
+            </thead>
+            <tbody>
+              {{range x := users}}
+                <tr>
+                    <td><a href="/app/admin/users/{{.ID}}">{{.ID}}</a></td>
+                    <td>{{.Username}}</td>
+                    <td>{{.FirstName}}</td>
+                    <td>{{.LastName}}</td>
+                    <td>
+                        {{if .AccessLevel == 1}}<span class="badge bg-info">User</span>{{end}}
+                        {{if .AccessLevel == 10}}<span class="badge bg-success">Admin</span>{{end}}
+
+                    </td>
+                </tr>
+                
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{end}}
+
+{{block js()}}
+
+{{end}}

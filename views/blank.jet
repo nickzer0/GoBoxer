@@ -1,0 +1,19 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+    Blank
+{{end}}
+
+
+{{block cardContent()}}
+
+
+{{end}}
+
+{{block js()}}
+
+{{end}}

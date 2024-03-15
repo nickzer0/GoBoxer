@@ -1,0 +1,98 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Projects
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/projects">Projects</a></li>
+      <li class="breadcrumb-item active">Add</li>
+    </ol>
+    <h4 class="mt-4">Add Project</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+
+    <form method="post" action="/app/projects/add" novalidate class="needs-validation" id="host-form">
+      <input type="hidden" name="action" value="1" id="action">
+      <input type="hidden" name="csrf_token" value="">
+
+          <div class="row">
+            <div class="col-md-11 col-xs-12">
+
+              <div class="col-md-6 grid-margin stretch-card float-left mt-3">
+
+                  <div class="form-group mt-1">
+                    <label for="project_name">Name:</label>
+                    <input type="text" class="form-control" id="project_name" name="project_name"
+                      placeholder="Project Name">
+                  </div>
+
+                  <div class="form-group mt-1">
+                    <label for="project_id">ID:</label>
+                    <input type="text" class="form-control" id="project_id" name="project_id" placeholder="Project ID">
+                  </div>
+
+                  <div class="form-group mt-2">
+                    <label for="assign_users">Assign To User:</label>
+                    <br>
+                    <div class="overflow-auto mt-1" style="max-height: 100px">
+                    {{range id, name := users}}
+                        <input type="checkbox" class="form-check-inline mt-1" name="assign_users" id="assign_users"
+                          value="{{name}}">
+                        {{name}}<br>
+                        {{end}}
+                    </div>
+
+                  </div>
+              </div>
+              <div class="col-md-5 grid-margin stretch-card float-right mt-4">
+                <div class="form-group">
+                  <label for="project_notes">Notes</label>
+                  <textarea class="form-control" id="project_note" rows="6" name="project_notes"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 grid-margin stretch-card float-right">
+              <button type="submit" class="btn btn-primary mt-4">Submit</button>
+            </div>
+    </form>
+  </div>
+</div>
+
+
+
+
+
+
+{{end}}
+
+{{block js()}}
+<script>
+  function deleteProject(id) {
+    var id = document.getElementById("remove_name").value;
+    attention.confirm({
+      html: "Are you sure you want to remove project " + id + "?",
+      icon: 'warning',
+      confirmButton: true,
+
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/projects/remove/" + id;
+        }
+      }
+    })
+  }
+</script>
+{{end}}

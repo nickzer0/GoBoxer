@@ -1,0 +1,156 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Servers
+{{end}}
+
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item active">Servers</li>
+    </ol>
+    <a href="/app/servers/add" class="btn btn-primary float-right">Add</a>
+    <h4 class="mt-4">Servers</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <table class="table table-condensed table-striped" id="server-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Project</th>
+          <th>Provider</th>
+          <th>Hostname</th>
+          <th>OS</th>
+          <th>IP Address</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{if len(servers) != 0}}
+
+        {{range X := servers}}
+        <tr id=server-{{.ID}}>
+          <td><a href="/app/servers/{{.ID}}"><span class="badge bg-info">{{.ID}}</span></a></td>
+          <td><a href="/app/projects/{{.Project}}">{{.Project}}</a></td>
+          <td>
+            {{if .Provider == "digitalocean"}}
+            <img src="/static/assets/img/digitalocean.png" width="25" height="25" data-toggle="tooltip"
+              title="Digital Ocean"></img>
+            {{else if .Provider == "linode"}}
+            <img src="/static/assets/img/linode.png" width="40" height="40" data-toggle="tooltip"
+            title="Linode"></img>
+            {{else}}
+            {{.Provider}}
+            {{end}}
+          </td>
+          <td>{{.Name}}</td>
+          <td>
+            {{if .OS == "ubuntu-2204"}}
+            <img src="/static/assets/img/ubuntu.png" width="20" height="20" data-toggle="tooltip"
+              title="Ubuntu 22.04 x64"></img>
+            {{end}}
+          </td>
+          <td>
+            {{if .IP == "Pending"}}
+            <span class="badge bg-info">Pending</span>
+            {{else}}
+            <span id="ip-address-{{.ID}}">{{.IP}}</span><button id="copy_button" class="btn fa-regular fa-clipboard" onclick="copyFunction({{.ID}})"></button>
+            {{end}}
+          </td>
+          <td>
+            {{if .Status == "new"}}
+            <span class="badge bg-success">New</span>
+            {{else}}
+            <span class="badge bg-success">{{.Status}}</span>
+            {{end}}
+          </td>
+        </tr>
+        {{end}}
+
+        {{else}}
+        <tr>
+          <td colspan="9">No servers found!</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+    {{if isAdmin()}}
+    {{if len(servers) != 0}}
+    <a class="btn btn-danger float-right" onclick="deleteAll()">Remove All</a>
+    {{end}}
+    {{end}}
+  </div>
+</div>
+
+
+
+
+
+
+
+{{end}}
+
+{{block js()}}
+<script>
+  function deleteAll() {
+    attention.confirm({
+      html: "Are you sure you want to delete all servers from cloud providers?",
+      icon: 'warning',
+      confirmButton: true,
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/servers/removeall";
+        }
+      }
+    })
+  }
+</script>
+
+<script>
+  function deleteServer(id) {
+    attention.confirm({
+      html: "Are you sure you want to delete server with ID " + id + "?",
+      icon: 'warning',
+      confirmButton: true,
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/servers/remove/" + id;
+        }
+      }
+    })
+  }
+</script>
+
+<script>
+  function provisionServer(id) {
+    attention.confirm({
+      html: "Are you sure you want to re-run provisioning on server with ID " + id + "?",
+      icon: 'warning',
+      confirmButton: true,
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/servers/provision/" + id;
+        }
+      }
+    })
+  }
+</script>
+
+<script>
+function copyFunction(id) {
+  var copyText = document.getElementById("ip-address-" + id);
+  navigator.clipboard.writeText(copyText.innerHTML);
+}
+</script>
+{{end}}

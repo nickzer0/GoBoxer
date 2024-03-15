@@ -1,0 +1,183 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+<style>
+  .border-success,
+  .border-warning,
+  .border-danger,
+  .border-secondary {
+    border: 1px solid;
+  }
+
+  .card-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+  }
+
+  .card-colour {
+    background-color: #e9ecef;
+  }
+
+</style>
+{{end}}
+
+{{block cardTitle()}}
+Home
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item active">Home</li>
+    </ol>
+    <h4 class="mt-4">Dashboard</h4>
+    <hr>
+  </div>
+</div>
+
+{{if isAdmin()}}
+<main class="content">
+  <div class="container-fluid p-0">
+    <div class="row justify-content-center">
+      <!-- Cards for Digital Ocean, Linode, AWS -->
+      <div class="card card-colour col-lg-3 m-2">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title">Digital Ocean</h5>
+            </div>
+            <div class="col-auto">
+              <div class="stat text-primary">
+                <img height="40px" width="40px" src="/static/assets/img/digitalocean.png">
+              </div>
+            </div>
+            <p class="text-muted">Resources: {{services.DigitalOcean}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-colour col-lg-3 m-2">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title">Linode</h5>
+            </div>
+            <div class="col-auto">
+              <div class="stat text-primary">
+                <img height="40px" width="40px" src="/static/assets/img/linode.png">
+              </div>
+            </div>
+            <p class="text-muted">Resources: {{services.Linode}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-colour col-lg-3 m-2">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title">AWS</h5>
+            </div>
+            <div class="col-auto">
+              <div class="stat text-primary">
+                <img height="40px" width="40px" src="/static/assets/img/aws.png">
+              </div>
+            </div>
+            <p class="text-muted">Resources: {{services.AWS}}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="card card-colour col-lg-3 m-2">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title">Azure</h5>
+            </div>
+            <div class="col-auto">
+              <div class="stat text-primary">
+                <img height="40px" width="40px" src="/static/assets/img/azure.png">
+              </div>
+            </div>
+            <p class="text-muted">Resources: {{services.Azure}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-colour col-lg-3 m-2">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title">NameCheap</h5>
+            </div>
+            <div class="col-auto">
+              <div class="stat text-primary">
+                <img height="40px" width="40px" src="/static/assets/img/namecheap.png">
+              </div>
+            </div>
+            <p class="text-muted">Resources: {{services.NameCheap}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-colour col-lg-3 m-2">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title">GoDaddy</h5>
+            </div>
+            <div class="col-auto">
+              <div class="stat text-primary">
+                <img height="40px" width="40px" src="/static/assets/img/godaddy.png">
+              </div>
+            </div>
+            <p class="text-muted">Resources: {{services.GoDaddy}}</p>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+</main>
+{{end}} <!-- This closes the isAdmin check that wraps the main content for admin -->
+
+<div class="card-body">
+  <div class="row">
+    <div class="col">
+      <h5 class="card-title">Projects</h5>
+    </div>
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Created By</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range projects}}
+        <tr>
+          <td><a href="/app/projects/{{.ProjectNumber}}">{{.ProjectNumber}}</a></td>
+          <td>{{.ProjectName}}</td>
+          <td>{{.CreatedBy}}</td>
+          <td>{{humanDate(.CreatedAt)}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{end}}
+
+{{block js()}}
+{{end}}

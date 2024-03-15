@@ -1,0 +1,75 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Projects
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item active">Projects</li>
+    </ol>
+    <a href="/app/projects/add" class="btn btn-primary float-right">Add</a>
+    <h4 class="mt-4">Projects</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    {{if len(projects) > 0}}
+    <table class="table table-condensed table-striped">
+      <thead>
+      <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Created By</th>
+          <th>Date</th>
+          <th>Notes</th>
+      </tr>
+      </thead>
+      <tbody>
+        {{range x := projects}}
+          <tr>
+              <td><a href="/app/projects/{{.ProjectNumber}}">{{.ProjectNumber}}</a></td>
+              <td>{{.ProjectName}}</td>
+              <td>{{.CreatedBy}}</td>
+              <td>{{humanDate(.CreatedAt)}}</td>
+              <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:250px;">{{projects[x].Notes}}</td>
+          </tr>
+          
+      {{end}}
+      </tbody>
+  </table>
+  {{else}}
+  <p>No projects found!</p>
+  {{end}}
+  </div>
+</div>
+
+{{end}}
+
+{{block js()}}
+<script>
+  function deleteProject(id) {
+    var id = document.getElementById("remove_name").value;
+    attention.confirm({
+      html: "Are you sure you want to remove project " + id + "?",
+      icon: 'warning',
+      confirmButton: true,
+
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/projects/remove/" + id;
+        }
+      }
+    })
+  }
+</script>
+{{end}}

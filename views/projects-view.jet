@@ -1,0 +1,220 @@
+{{extends "./layouts/layout.jet"}}
+
+{{block css()}}
+{{end}}
+
+
+{{block cardTitle()}}
+Projects
+{{end}}
+
+{{block cardContent()}}
+<div class="row">
+  <div class="col">
+    <ol class="breadcrumb mt-1">
+      <li class="breadcrumb-item"><a href="/">GoBoxer</a></li>
+      <li class="breadcrumb-item"><a href="/app/projects">Projects</a></li>
+      <li class="breadcrumb-item active">{{project.ProjectName}}</li>
+    </ol>
+    <h4 class="mt-4">{{project.ProjectName}}</h4>
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <form method="post" action="/app/projects/update" novalidate class="needs-validation" id="host-form">
+      <input type="hidden" name="action" value="1" id="action">
+      <input type="hidden" name="csrf_token" value="">
+      <input type="hidden" name="project_id" value="{{project.ID}}">
+
+      <div class="tab-content" id="projects-tab-content" style="min-height: 55vh">
+
+        <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="add-tab" id="add">
+          <div class="row">
+
+            <div class="col-md-11 col-xs-12">
+
+              <div class="col-md-6 grid-margin stretch-card float-left mt-3">
+
+                  <div class="form-group mt-1">
+                    <input type="hidden" name="project_number" value="{{project.ProjectNumber}}">
+                    <label for="project_id">ID</label>
+                    <input type="text" class="form-control" id="project_number" name="project_number" value="{{project.ProjectNumber}}" disabled>
+                  </div>
+
+                  <div class="form-group mt-1">
+                    <label for="project_name">Name</label>
+                    <input type="text" class="form-control" id="project_name" name="project_name"
+                      value="{{project.ProjectName}}">
+                  </div>
+
+
+
+                  <div class="form-group mt-2">
+                    <label for="assign_users">Assign</label>
+                    <br>
+                    <div class="overflow-auto mt-1" style="max-height: 150px">
+                      {{range id, name := users}}
+                          <input type="checkbox" class="form-check-inline mt-1" name="assign_users" id="assign_users"
+                            value="{{name}}" 
+                            {{range id, username := project.AssignedTo}}
+                            {{if username == name}}checked{{end}}
+                            {{end}}
+                            >
+                          {{name}}<br>
+                          {{end}}
+                        </div>
+
+                    </label>
+                  </div>
+              </div>
+              <div class="col-md-5 grid-margin stretch-card float-right mt-4">
+                <div class="form-group">
+                  <label for="project_notes">Notes</label>
+                  <textarea class="form-control" id="project_note" rows="6" name="project_notes">{{project.Notes}}</textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 grid-margin stretch-card">
+              <a href="#" id="remove_project" onclick=deleteProject() class="btn btn-danger float-end mt-4">Remove</a>
+              <button type="submit" class="btn btn-primary float-end mt-4 mr-1">Submit</button>
+            </div>
+    </form>
+
+ 
+  </div>
+</div>
+<hr>
+
+<div>
+  <label>Servers</label>
+  <table class="table table-condensed" id="server-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Provider</th>
+        <th>Hostname</th>
+        <th>OS</th>
+        <th>IP Address</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{if len(servers) > 0}}
+
+      {{range X := servers}}
+      <tr id=server-{{.ID}}>
+        <td><a href="/app/servers/{{.ID}}"><span class="badge bg-info">{{.ID}}</span></a></td>
+        <td>
+          {{if .Provider == "digitalocean"}}
+          <img src="/static/assets/img/digitalocean.png" width="40" height="40" data-toggle="tooltip"
+            title="Digital Ocean"></img>
+
+          {{else}}
+          {{.Provider}}
+          {{end}}
+        </td>
+        <td>{{.Name}}</td>
+        <td>
+          {{if .OS == "ubuntu-2204"}}
+          <img src="/static/assets/img/ubuntu.png" width="30" height="30" data-toggle="tooltip"
+            title="Ubuntu 22.04 x64"></img>
+          {{end}}
+        </td>
+        <td>
+          {{if .IP == "Pending"}}
+          <span class="badge bg-info">Pending</span>
+          {{else}}
+          <span id="ip_address">{{.IP}}</span>
+          {{end}}
+        </td>
+        <td>
+          {{if .Status == "new"}}
+          <span class="badge bg-success">New</span>
+          {{else}}
+          <span class="badge bg-success">{{.Status}}</span>
+          {{end}}
+        </td>
+      </tr>
+      {{end}}
+
+      {{else}}
+      <tr>
+        <td colspan="9">No servers found!</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+<br>
+
+<div class="row">
+  <div class="col">
+  <label>Domain Redirectors</label>
+
+    <table class="table table-condensed table-striped" id="redirector-table">
+      <thead>
+      <tr>
+          <th>ID</th>
+          <th>Provider</th>
+          <th>URL</th>
+          <th>Domain</th>
+          <th>Created</th>
+          <th>Status</th>
+          <th></th>
+      </tr>
+      </thead>
+      <tbody>
+        {{if len(redirectors) > 0}}
+          {{range redirectors}}
+          <tr id="redirector-{{.ID}}">
+              <td><span class="badge bg-info">{{.ID}}</span></td>
+              <td>
+                {{if .Provider == "AWS"}}<img src="/static/assets/img/aws.png" width="30" height="30" data-toggle="tooltip" title="AWS"></img>{{end}}
+
+              </td>
+              <td><span id="redirector-url-{{.ID}}">{{.URL}}</span></td>
+              <td>{{.Domain}}</td>
+              <td>{{humanDate(.CreatedAt)}}</td>
+              <td>
+                {{if .Status == "Ready"}}
+                <span class="badge bg-success">Ready</span>
+                {{end}}
+                {{if .Status == "Creating"}}
+                  <span class="badge bg-primary" data-toggle="tooltip" title="This may take up to 5 minutes.">Creating</span>
+                {{end}}
+              </td>
+              <td></td>
+          </tr>
+          {{end}}
+        {{else}}
+        <td colspan="8">No domain redirectors found!</td>
+        {{end}}
+      </tbody>
+  </table>
+  </div>
+</div>
+{{end}}
+
+{{block js()}}
+<script>
+  function deleteProject() {
+    var id = {{project.ProjectNumber}};
+    console.log(id)
+    attention.confirm({
+      html: "Are you sure you want to remove project " + id + "?",
+      icon: "warning",
+      confirmButton: true,
+
+      callback: function (result) {
+        if (result != false) {
+          window.location.href = "/app/projects/remove/" + id;
+        }
+      }
+    })
+  }
+
+
+</script>
+{{end}}

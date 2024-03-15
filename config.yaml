@@ -1,0 +1,6 @@
+dbdatafile: data.db
+domain: localhost
+inproduction: false
+httpPort: "8000"
+# Ansible output will be provided in console if true
+ansibleDebug: true
