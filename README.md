@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/nickzer0/GoBoxer)](https://goreportcard.com/report/github.com/nickzer0/GoBoxer)
 # GoBoxer
 
 GoBoxer is a tool I started writing to learn about Websockets, and ended up getting out of hand. It's still far from complete, but can be used for managing Red Team infrastructure and projects, and can help with the following things:
